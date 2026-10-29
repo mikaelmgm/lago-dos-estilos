@@ -2,9 +2,11 @@
 
 Um peixinho nadando num lago, desenhado em 45 estilos de arte diferentes. Você escolhe o estilo numa aba do lado da tela e o jogo continua de onde estava: mesmo peixe, mesmo lago, mesmos petiscos.
 
+**[Jogar no navegador](https://mikaelmgm.github.io/lago-dos-estilos/)** · [versão só em ASCII](https://mikaelmgm.github.io/lago-dos-estilos/ascii.html)
+
 ## Como jogar
 
-Abra o `index.html` no navegador. Precisa de internet, porque o three.js e as fontes vêm de CDN.
+Jogue pelo link acima, ou abra o `index.html` no navegador. Precisa de internet, porque o three.js e as fontes vêm de CDN.
 
 - **W A S D** ou **setas**: nadar
 - **Clique e segure** no lago: o peixe nada até lá
