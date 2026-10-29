@@ -1,0 +1,141 @@
+<title>Lago dos Estilos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;600;700&family=JetBrains+Mono:wght@700;800&family=VT323&family=IM+Fell+English:ital@0;1&family=Tilt+Neon&family=Bangers&family=Caveat:wght@600&family=Press+Start+2P&display=swap">
+<style>
+  /* Layout: o lago ocupa a tela; placar no canto esquerdo, aba de estilos à direita (vira gaveta embaixo no celular). */
+  :root {
+    color-scheme: dark;
+    --ground: #203319;
+    --glass: rgba(16, 28, 20, 0.62);
+    --glass-strong: rgba(12, 22, 16, 0.84);
+    --glass-edge: rgba(236, 246, 214, 0.16);
+    --key: rgba(236, 246, 214, 0.12);
+    --hover: rgba(236, 246, 214, 0.08);
+    --ink: #f3f0e2;
+    --ink-soft: rgba(243, 240, 226, 0.74);
+    --ink-faint: rgba(243, 240, 226, 0.5);
+    --koi: #ffb25e;
+    --koi-ink: #2b1a08;
+    --osd: #f4f4f4;
+    --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
+    --font-body: "Figtree", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-osd: "VT323", ui-monospace, Consolas, monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body { margin: 0; background: var(--ground); color: var(--ink); font: 14px/1.4 var(--font-body); }
+  #c { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+  #c2 { position: fixed; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+  .tag { font: 700 9.5px var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--koi); white-space: nowrap; }
+  button { font: inherit; color: inherit; }
+  [hidden] { display: none !important; }
+
+  .glass {
+    background: var(--glass); border: 1px solid var(--glass-edge); border-radius: 10px;
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  }
+  .hud {
+    position: fixed; inset: 0; pointer-events: none;
+    display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 12px;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: calc(280px + env(safe-area-inset-right, 0px));
+  }
+  .brand { pointer-events: auto; padding: 11px 14px 12px; display: flex; flex-direction: column; gap: 6px; width: min(330px, 100%); }
+  .brand h1 { margin: 0; font: 800 15px/1.1 var(--font-mono); letter-spacing: 0.06em; }
+  .brand h1 span { color: var(--koi); }
+  .now { display: flex; align-items: baseline; gap: 8px; font-weight: 700; font-size: 16px; }
+  .now b { font: 800 13px var(--font-mono); color: var(--koi-ink); background: var(--koi); border-radius: 5px; padding: 1px 6px; font-variant-numeric: tabular-nums; }
+  .desc { margin: 0; color: var(--ink-soft); font-size: 13px; }
+  .note { margin: 0; color: var(--koi); font-size: 12.5px; }
+  .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .score { font-size: 13px; color: var(--ink-soft); }
+  .score b { display: inline-block; font: 700 14px var(--font-mono); color: var(--koi); font-variant-numeric: tabular-nums; }
+  .score b.pop { animation: pop 0.45s ease-out; }
+  @keyframes pop { from { transform: scale(1.7); } to { transform: scale(1); } }
+  .size { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft); }
+  .size input { width: 104px; accent-color: var(--koi); }
+  .hint { pointer-events: auto; margin: 0; padding: 8px 14px; font-size: 12.5px; color: var(--ink-soft); max-width: 100%; }
+  .hint kbd { font: 700 11px var(--font-mono); color: var(--ink); background: var(--key); border-radius: 4px; padding: 1px 5px; }
+  .touch { display: none; }
+  @media (hover: none) and (pointer: coarse) { .desk { display: none; } .touch { display: inline; } }
+
+  /* aba de estilos */
+  .styles {
+    position: fixed; z-index: 5;
+    top: calc(16px + env(safe-area-inset-top, 0px));
+    right: max(16px, env(safe-area-inset-right, 0px));
+    width: 248px; max-height: calc(100% - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+    display: flex; flex-direction: column; background: var(--glass-strong); overflow: hidden;
+  }
+  .styles-head {
+    display: flex; align-items: center; gap: 8px; width: 100%; border: 0; background: transparent; cursor: pointer;
+    padding: 11px 14px; font: 800 13px var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; text-align: left;
+  }
+  .styles-head .count { color: var(--ink-faint); font-weight: 700; }
+  .styles-head .chev { margin-left: auto; transition: transform 0.2s ease; }
+  .styles.closed .chev { transform: rotate(-90deg); }
+  .styles.closed .style-list { display: none; }
+  .style-list { overflow-y: auto; padding: 0 8px 10px; border-top: 1px solid var(--glass-edge); overscroll-behavior: contain; }
+  .style-list h2 { margin: 12px 6px 4px; font: 700 10.5px var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); }
+  .style-btn {
+    display: flex; align-items: center; gap: 10px; width: 100%; border: 0; border-radius: 7px; background: transparent;
+    padding: 7px 8px; cursor: pointer; text-align: left; font-size: 13.5px; font-weight: 600;
+  }
+  .style-btn:hover { background: var(--hover); }
+  .style-btn .n { flex: none; width: 24px; font: 700 11.5px var(--font-mono); color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+  .style-btn[aria-pressed="true"] { background: var(--koi); color: var(--koi-ink); }
+  .style-btn[aria-pressed="true"] .n, .style-btn[aria-pressed="true"] .tag { color: var(--koi-ink); }
+  .style-btn .tag { margin-left: auto; }
+  .style-btn:focus-visible, .styles-head:focus-visible, .size input:focus-visible { outline: 2px solid var(--koi); outline-offset: 2px; }
+
+  /* tela de videocassete (só no estilo CRT) */
+  .osd { position: fixed; inset: 0; pointer-events: none; font: 30px/1 var(--font-osd); color: var(--osd); text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6); }
+  .osd span { position: absolute; }
+  .osd .play { left: 9%; top: 18%; }
+  .osd .time { right: calc(9% + 260px); bottom: 12%; }
+
+  .fail { position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; padding: 24px; text-align: center; font-size: 15px; color: var(--ink); background: var(--ground); }
+
+  @media (max-width: 720px) {
+    .hud { padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px)); }
+    .styles { top: auto; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); left: max(16px, env(safe-area-inset-left, 0px)); width: auto; max-height: 58%; }
+    .styles .style-list { order: -1; border-top: 0; border-bottom: 1px solid var(--glass-edge); }
+    .osd .time { right: 9%; bottom: 22%; }
+    .hint { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .score b.pop { animation: none; } .styles-head .chev { transition: none; } }
+</style>
+
+<canvas id="c" aria-label="Um lago com um peixe nadando, desenhado em vários estilos de arte"></canvas>
+<canvas id="c2" hidden aria-hidden="true"></canvas>
+<div class="hud">
+  <div class="glass brand">
+    <h1><span>~</span> lago dos estilos <span>~</span></h1>
+    <div class="now"><b id="styleNum">2</b><span id="styleName">ASCII</span><span class="tag" id="styleTag" hidden>arte própria</span></div>
+    <p class="desc" id="styleDesc"></p>
+    <p class="note" id="note" hidden></p>
+    <div class="row">
+      <span class="score">petiscos: <b id="score">0</b></span>
+      <label class="size" id="sizeRow" for="cell">tamanho <input id="cell" type="range" min="5" max="18" step="1" value="9"></label>
+    </div>
+  </div>
+  <p class="glass hint">
+    <span class="desk"><kbd>W A S D</kbd> ou setas nadam · clique e segure para guiar · <kbd>Q</kbd> <kbd>E</kbd> trocam o estilo</span>
+    <span class="touch">toque e segure no lago para guiar o peixe</span>
+  </p>
+</div>
+<aside class="styles glass" id="styles" aria-label="Estilos de arte">
+  <button class="styles-head" id="stylesToggle" type="button" aria-expanded="true" aria-controls="styleList">
+    <span>Estilos</span><span class="count" id="styleCount"></span><span class="chev" aria-hidden="true">▾</span>
+  </button>
+  <div class="style-list" id="styleList"></div>
+</aside>
+<div class="osd" id="osd" hidden><span class="play">PLAY ▶</span><span class="time" id="osdTime"></span></div>
+<div class="fail" id="fail" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
